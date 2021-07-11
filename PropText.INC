@@ -1,3 +1,6 @@
+'library for proportional texts on CMM2
+  
+CONST VERSION.PROP = "0.01"
 DIM STRING offset.PROP(8), width.PROP(8) 'needed for library to work
 SUB text.PROP(x%, y%, txt$, alig$, f%, fc%, bc%)
   'draw proportional text txt$ on x%, y% with alignment alig$ in font f% with forecolor f% and backcolor b% 
