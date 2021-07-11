@@ -7,7 +7,7 @@ DIM STRING test
 CONST sample="Proportional text"
 
 
-text.PROP(MM.HRES\2,0," Proportinal text is yellow, standard text is white for comparation... ","CT", 8, RGB(BLACK), RGB(WHITE))
+text.PROP(MM.HRES\2,0," Proportional text is yellow, standard text is white for comparation... ","CT", 8, RGB(BLACK), RGB(WHITE))
 FOR fnt = 1 TO 8
   IF fnt=6 THEN
     test = "0123456789"
