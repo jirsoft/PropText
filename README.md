@@ -11,9 +11,7 @@ Usage:
 
 *print.PROP(txt$, addSpace$)*...prints proportional txt$ on current position, wraps character to next line, without line feed. If the string addSpace$ is not empty, then to N-th SPACE (" ") in txt$ is added PX pixels, where PX=ASC(MID$(addSpace$, N, 1))
 
-*print.PROP(txt$, addSpace$)*...prints proportional txt$ on current position, wraps character to next line, without line feed
-
-*printLn.PROP(txt$)*...same as print.PROP with line feed
+*printLn.PROP(txt$, addSpace$)*...same as print.PROP with line feed
 
 *wrap.PROP(txt$)*...**word wrapped** proportional text output
 
