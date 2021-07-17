@@ -1,5 +1,6 @@
-'PropText libray
-CONST VERSION.PROP = "0.02"
+'PropText library
+'JirSoft 2021
+CONST VERSION.PROP = "0.03"
 
 'needed for library to work
 DIM STRING offset.PROP(16), width.PROP(16) 'strings with offset and width of font n%
@@ -21,10 +22,12 @@ SUB font.PROP(fnt%)
   FONT fnt%
 END SUB
 
-SUB printLn.PROP(txt$)
+SUB printLn.PROP(txt$, addSpace$)
   'simple PRINT command with new line on the end
+  'if the string addSpace$ is not empty, then to N-th SPACE (" ") in txt$ is added PX pixels,
+  'where PX=ASC(MID$(addSpace$, N, 1))
 
-  print.PROP(txt$)
+  print.PROP(txt$, addSpace$)
   IF (MM.INFO(VPOS)+2*MM.INFO(FONTHEIGHT))>MM.VRES THEN
     ?@(0);
     PAGE SCROLL 0,0,MM.INFO(FONTHEIGHT),bc.PROP
@@ -33,19 +36,75 @@ SUB printLn.PROP(txt$)
   ENDIF
 END SUB
 
+SUB justify.PROP(txt$, txtWidth%, dx%)
+  'special PRINT command with word wrap to txtWidth% written to x-offset dx%
+
+  LOCAL STRING part = "", orig = txt$, rest, prevPart, prevRest, addSp=""
+  LOCAL INTEGER p, w, sp, i, spw
+
+  DO WHILE orig<>""
+    IF dx%>0 THEN ?@(dx%);
+    rest = orig
+    p = 0
+    DO WHILE getTextWidth.PROP(fnt.PROP, part)<=txtWidth% AND rest<>""
+      p = INSTR(p+1, orig, " ")
+      IF p>0 THEN
+        prevPart = part
+        part = LEFT$(orig, p-1)
+        prevRest = rest
+        rest = MID$(orig, p+1)
+      ELSE
+        part = orig
+        rest = ""
+      ENDIF
+    LOOP
+    IF getTextWidth.PROP(fnt.PROP, part)>txtWidth% THEN
+      IF prevPart<>"" THEN
+        part = prevPart
+        rest = prevRest
+      ELSE
+        'ERROR "Not enough width for text"
+        'here will be simple print whole word that not fir into set space
+      ENDIF
+    ENDIF
+    IF rest<>"" THEN
+      w = txtWidth% - getTextWidth.PROP(fnt.PROP, part)
+      addSp = ""
+      IF w > 0 THEN
+        sp = 0
+        spw = 0
+        FOR i=1 TO LEN(part)
+          IF MID$(part, i, 1)=" " THEN INC sp
+        NEXT i
+        IF sp>0 THEN spw=w\sp
+        FOR i = 1 TO sp-1
+          CAT addSp, CHR$(spw)
+          INC w, -spw
+        NEXT i
+        CAT addSp, CHR$(w)    
+      ENDIF
+      printLn.PROP(part, addSp)
+    ELSE
+      printLn.PROP(part)
+    ENDIF
+    orig = rest
+    part = ""
+  LOOP
+END SUB
+
 SUB wrap.PROP(txt$)
   'special PRINT command with word wrap
 
   LOCAL STRING part, orig = txt$+" "
-  LOCAL INTEGER p = INSTR(orig, " "), space = 0, w
+  LOCAL INTEGER p = INSTR(orig, " "), space = 0, w, ww = ASC(LEFT$(width.PROP(fnt.PROP),1))
 
   DO WHILE p>0
     part = LEFT$(orig, p-1)
     orig = MID$(orig, p+1)
     IF part<>"" THEN
       w = getTextWidth.PROP(fnt.PROP, part)
-      IF space THEN INC w, getTextWidth.PROP(fnt.PROP, " ") + ASC(LEFT$(width.PROP(fnt.PROP),1))
-      IF w+MM.INFO(HPOS)=>MM.HRES THEN
+      IF space THEN INC w, getTextWidth.PROP(fnt.PROP, " ") + ww
+      IF ww+w+MM.INFO(HPOS)=>MM.HRES THEN
         printLn.PROP("")
         space = 0
       ENDIF
@@ -66,11 +125,11 @@ SUB wrap.PROP(txt$)
   ENDIF
 END SUB
 
-SUB print.PROP(txt$)
+SUB print.PROP(txt$, addSpace$)
   'print proportional text txt$ with in current font, forecolor and backcolor
 
   LOCAL INTEGER i, xx= MM.INFO(HPOS), yy=MM.INFO(VPOS), o, w, ww=ASC(LEFT$(width.PROP(fnt.PROP), 1))
-  LOCAL STRING c
+  LOCAL STRING c, addSp = addSpace$
   
   FOR i=1 TO LEN(txt$)
     c = MID$(txt$, i, 1)
@@ -87,6 +146,12 @@ SUB print.PROP(txt$)
     INC xx, -o
     IF bc.PROP>0 THEN BOX xx+o, yy, w+o+ww, MM.INFO(FONTHEIGHT), 0,,bc.PROP
     TEXT xx, yy, c, "LT",,, fc.PROP, -1
+    IF addSp<>"" THEN
+      IF c=" " THEN
+        INC xx, ASC(LEFT$(addSp, 1))
+        addSp = MID$(addSp, 2)
+      ENDIF
+    ENDIF
     INC xx, w + o + ww
   NEXT i
   ?@(xx,yy);
