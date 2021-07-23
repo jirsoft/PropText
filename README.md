@@ -21,7 +21,13 @@ Usage:
 
 
 
-
+#### v0.04
+	new command: tab.PROP
+	added support for TAB and LF to print.PROP command
+	simpler printLn.PROP
+	rename PropTest.BAS to Test1.BAS
+	added Test2.BAS for tabulator test
+	added screen shot Tabulators.png
 
 #### v0.03
 	new command: justify.PROP
