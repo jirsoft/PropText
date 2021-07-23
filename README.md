@@ -9,7 +9,7 @@ Usage:
 
 *text.PROP(x%,y%,txt$,al%,fnt%,fc%,bc%)*...similar to TEXT command, just size parameter is ommited
 
-*print.PROP(txt$, addSpace$)*...prints proportional txt$ on current position, wraps character to next line, without line feed. If the string addSpace$ is not empty, then to N-th SPACE (" ") in txt$ is added PX pixels, where PX=ASC(MID$(addSpace$, N, 1))
+*print.PROP(txt$, addSpace$)*...prints proportional txt$ on current position, wraps character to next line, without line feed. If the string addSpace$ is not empty, then to N-th SPACE (" ") in txt$ is added PX pixels, where PX=ASC(MID$(addSpace$, N, 1)). Supports TAB and LF in txt$
 
 *printLn.PROP(txt$, addSpace$)*...same as print.PROP with line feed
 
@@ -18,6 +18,8 @@ Usage:
 *justify.PROP(txt$, txtWidth%, dx%)*...**full jutified left and right word wrapped** proportional text with size txtWidth% written to offset dx%
 
 *getTextWidth.PROP(fnt$, txt$)*...returns width of the proportinal text in font fnt% in pixels
+
+*tab.PROP (t%)*...set TAB positions to every t% pixels
 
 
 
