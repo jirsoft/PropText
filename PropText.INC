@@ -1,11 +1,12 @@
 'PropText library
 'JirSoft 2021
-CONST VERSION.PROP = "0.03"
+CONST VERSION.PROP = "0.04"
 
 'needed for library to work
 DIM STRING offset.PROP(16), width.PROP(16) 'strings with offset and width of font n%
 'these 3 variables are needed because of inpossibility of read enviroment
-DIM INTEGER fc.PROP=RGB(WHITE), bc.PROP = RGB(BLACK), fnt.PROP = 1 'color, background and current font
+DIM INTEGER fc.PROP = RGB(WHITE), bc.PROP = RGB(BLACK), fnt.PROP = 1 'color, background and current font
+DIM INTEGER tb.PROP = 40 'default TAB positions (every 40 pixels)
 
 SUB color.PROP(foreCol%, backCol%)
   'alias for COLOUR command
@@ -26,14 +27,8 @@ SUB printLn.PROP(txt$, addSpace$)
   'simple PRINT command with new line on the end
   'if the string addSpace$ is not empty, then to N-th SPACE (" ") in txt$ is added PX pixels,
   'where PX=ASC(MID$(addSpace$, N, 1))
-
-  print.PROP(txt$, addSpace$)
-  IF (MM.INFO(VPOS)+2*MM.INFO(FONTHEIGHT))>MM.VRES THEN
-    ?@(0);
-    PAGE SCROLL 0,0,MM.INFO(FONTHEIGHT),bc.PROP
-  ELSE
-    ?@(0,MM.INFO(FONTHEIGHT)+MM.INFO(VPOS));
-  ENDIF
+  
+  print.PROP(txt$ + CHR$(10), addSpace$)
 END SUB
 
 SUB justify.PROP(txt$, txtWidth%, dx%)
@@ -64,7 +59,7 @@ SUB justify.PROP(txt$, txtWidth%, dx%)
         rest = prevRest
       ELSE
         'ERROR "Not enough width for text"
-        'here will be simple print whole word that not fir into set space
+        'here will be simple print whole word that not fit into set space
       ENDIF
     ENDIF
     IF rest<>"" THEN
@@ -133,9 +128,30 @@ SUB print.PROP(txt$, addSpace$)
   
   FOR i=1 TO LEN(txt$)
     c = MID$(txt$, i, 1)
-    o = ASC(MID$(offset.PROP(fnt.PROP), ASC(c), 1))
-    w = ASC(MID$(width.PROP(fnt.PROP), ASC(c), 1))
-    IF w+ww+xx>MM.HRES THEN
+    IF ASC(c)>31 THEN
+      o = ASC(MID$(offset.PROP(fnt.PROP), ASC(c), 1))
+      w = ASC(MID$(width.PROP(fnt.PROP), ASC(c), 1))
+      IF w+ww+xx>MM.HRES THEN
+        xx = 0
+        IF (yy+2*MM.INFO(FONTHEIGHT))>MM.VRES THEN
+          PAGE SCROLL 0,0,MM.INFO(FONTHEIGHT),bc.PROP
+        ELSE
+          INC yy, MM.INFO(FONTHEIGHT)
+        ENDIF
+      ENDIF
+      INC xx, -o
+      IF bc.PROP>0 THEN BOX xx+o, yy, w+o+ww, MM.INFO(FONTHEIGHT), 0,,bc.PROP
+      TEXT xx, yy, c, "LT",,, fc.PROP, -1
+      IF addSp<>"" THEN
+        IF c=" " THEN
+          INC xx, ASC(LEFT$(addSp, 1))
+          addSp = MID$(addSp, 2)
+        ENDIF
+      ENDIF
+      INC xx, w + o + ww
+    ELSEIF c=CHR$(8) THEN
+      xx = ((xx \ tb.PROP) + 1) * tb.PROP
+    ELSEIF c=CHR$(10) THEN
       xx = 0
       IF (yy+2*MM.INFO(FONTHEIGHT))>MM.VRES THEN
         PAGE SCROLL 0,0,MM.INFO(FONTHEIGHT),bc.PROP
@@ -143,16 +159,6 @@ SUB print.PROP(txt$, addSpace$)
         INC yy, MM.INFO(FONTHEIGHT)
       ENDIF
     ENDIF
-    INC xx, -o
-    IF bc.PROP>0 THEN BOX xx+o, yy, w+o+ww, MM.INFO(FONTHEIGHT), 0,,bc.PROP
-    TEXT xx, yy, c, "LT",,, fc.PROP, -1
-    IF addSp<>"" THEN
-      IF c=" " THEN
-        INC xx, ASC(LEFT$(addSp, 1))
-        addSp = MID$(addSp, 2)
-      ENDIF
-    ENDIF
-    INC xx, w + o + ww
   NEXT i
   ?@(xx,yy);
 END SUB
@@ -302,3 +308,9 @@ FUNCTION getTextWidth.PROP(f%, txt$) AS INTEGER
   NEXT i
   IF txt$<>"" THEN INC getTextWidth.PROP, -ww
 END FUNCTION
+
+SUB tab.PROP(t%)
+  'set TAB position to every t% pixels
+
+  tb.PROP = t%
+END SUB

@@ -21,7 +21,7 @@ font.PROP(8):color.PROP(RGB(BLACK),RGB(WHITE))
 ?:?:?"justify.PROP sample:"
 color.PROP(RGB(YELLOW))
 preview3
-SAVE IMAGE "SS.BMP"
+'SAVE IMAGE "SS.BMP"
 END
 SUB preview
   LOCAL INTEGER fnt
