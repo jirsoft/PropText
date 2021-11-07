@@ -1,6 +1,6 @@
 'PropText library
 'JirSoft 2021
-CONST VERSION.PROP = "0.04"
+CONST VERSION.PROP = "0.05"
 
 'needed for library to work
 DIM STRING offset.PROP(16), width.PROP(16) 'strings with offset and width of font n%
@@ -314,3 +314,61 @@ SUB tab.PROP(t%)
 
   tb.PROP = t%
 END SUB
+
+SUB justifyLine.PROP(txt$, txtWidth%, dx%)
+  'special PRINT-one-line command with word wrap to txtWidth% written to x-offset dx%
+  'in txt$ will stay non printed rest
+
+  LOCAL STRING part = "", orig = txt$, rest, prevPart, prevRest, addSp=""
+  LOCAL INTEGER p, w, sp, i, spw
+
+  IF dx%>0 THEN ?@(dx%);
+  rest = orig
+  p = 0
+  DO WHILE getTextWidth.PROP(fnt.PROP, part)<=txtWidth% AND rest<>""
+    p = INSTR(p+1, orig, " ")
+    IF p>0 THEN
+      prevPart = part
+      part = LEFT$(orig, p-1)
+      prevRest = rest
+      rest = MID$(orig, p+1)
+    ELSE
+      part = orig
+      rest = ""
+    ENDIF
+  LOOP
+  IF getTextWidth.PROP(fnt.PROP, part)>txtWidth% THEN
+    IF prevPart<>"" THEN
+      part = prevPart
+      rest = prevRest
+    ELSE
+      'ERROR "Not enough width for text"
+      'here will be simple print whole word that not fit into set space
+    ENDIF
+  ENDIF
+
+  IF rest<>"" THEN
+    w = txtWidth% - getTextWidth.PROP(fnt.PROP, part)
+    addSp = ""
+    IF w > 0 THEN
+      sp = 0
+      spw = 0
+      FOR i=1 TO LEN(part)
+        IF MID$(part, i, 1)=" " THEN INC sp
+      NEXT i
+      IF sp>0 THEN spw=w\sp
+      FOR i = 1 TO sp-1
+        CAT addSp, CHR$(spw)
+        INC w, -spw
+      NEXT i
+      CAT addSp, CHR$(w)    
+    ENDIF
+    printLn.PROP(part, addSp)
+  ELSE
+    printLn.PROP(part)
+  ENDIF
+
+  txt$ = rest
+END SUB
+
+
