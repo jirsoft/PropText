@@ -23,7 +23,14 @@ Usage:
 
 *tab.PROP (t%)*...set TAB positions to every t% pixels
 
+*font.PROP (f%)*...set FONT number
 
+*color.PROP (fc%, bc%)*...set colors for foreground and background
+
+
+
+#### v0.06
+	bugfixes
 
 #### v0.05
 	new command: justifyLine.PROP
