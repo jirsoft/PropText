@@ -1,6 +1,6 @@
 'PropText library
 'JirSoft 2021
-CONST VERSION.PROP = "0.05"
+CONST VERSION.PROP = "0.06"
 
 'needed for library to work
 DIM STRING offset.PROP(16), width.PROP(16) 'strings with offset and width of font n%
@@ -33,6 +33,8 @@ END SUB
 
 SUB justify.PROP(txt$, txtWidth%, dx%)
   'special PRINT command with word wrap to txtWidth% written to x-offset dx%
+
+  IF txt$="" THEN EXIT SUB
 
   LOCAL STRING part = "", orig = txt$, rest, prevPart, prevRest, addSp=""
   LOCAL INTEGER p, w, sp, i, spw
@@ -90,6 +92,8 @@ END SUB
 SUB wrap.PROP(txt$)
   'special PRINT command with word wrap
 
+  IF txt$="" THEN EXIT SUB
+
   LOCAL STRING part, orig = txt$+" "
   LOCAL INTEGER p = INSTR(orig, " "), space = 0, w, ww = ASC(LEFT$(width.PROP(fnt.PROP),1))
 
@@ -122,6 +126,8 @@ END SUB
 
 SUB print.PROP(txt$, addSpace$)
   'print proportional text txt$ with in current font, forecolor and backcolor
+
+  IF txt$="" THEN EXIT SUB
 
   LOCAL INTEGER i, xx= MM.INFO(HPOS), yy=MM.INFO(VPOS), o, w, ww=ASC(LEFT$(width.PROP(fnt.PROP), 1))
   LOCAL STRING c, addSp = addSpace$
@@ -165,6 +171,8 @@ END SUB
 
 SUB text.PROP(x%, y%, txt$, alig$, f%, fc%, bc%)
   'draw proportional text txt$ on x%, y% with alignment alig$ in font f% with forecolor f% and backcolor b% 
+
+  IF txt$="" THEN EXIT SUB
 
   LOCAL INTEGER i, xx=x%, yy=y%, o, w, ww=ASC(LEFT$(width.PROP(f%), 1))
   LOCAL STRING c, a="L"
@@ -301,12 +309,15 @@ END SUB
 FUNCTION getTextWidth.PROP(f%, txt$) AS INTEGER
   'get width of proportional text txt$ drawn in font f% in pixels
 
-  LOCAL INTEGER i, ww = ASC(LEFT$(width.PROP(f%), 1))
   getTextWidth.PROP = 0
+  IF txt$="" THEN EXIT FUNCTION
+
+  LOCAL INTEGER i, ww = ASC(LEFT$(width.PROP(f%), 1)), ch
   FOR i = 1 TO LEN(txt$)
-    INC getTextWidth.PROP, ASC(MID$(width.PROP(f%), ASC(MID$(txt$, i, 1)), 1)) + ww
+    ch = ASC(MID$(txt$, i, 1))
+    IF ch>0 THEN INC getTextWidth.PROP, ASC(MID$(width.PROP(f%), ch, 1)) + ww
   NEXT i
-  IF txt$<>"" THEN INC getTextWidth.PROP, -ww
+  INC getTextWidth.PROP, -ww
 END FUNCTION
 
 SUB tab.PROP(t%)
@@ -318,6 +329,8 @@ END SUB
 SUB justifyLine.PROP(txt$, txtWidth%, dx%)
   'special PRINT-one-line command with word wrap to txtWidth% written to x-offset dx%
   'in txt$ will stay non printed rest
+
+  IF txt$="" THEN EXIT SUB
 
   LOCAL STRING part = "", orig = txt$, rest, prevPart, prevRest, addSp=""
   LOCAL INTEGER p, w, sp, i, spw
