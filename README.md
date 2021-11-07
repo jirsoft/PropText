@@ -17,7 +17,7 @@ Usage:
 
 *justify.PROP(txt$, txtWidth%, dx%)*...**full jutified left and right word wrapped** proportional text with size txtWidth% written to offset dx%
 
-*justifyLine.PROP(txt$, txtWidth%, dx%)*...**full jutified left and right word wrapped** ONE LINE of proportional text with size txtWidth% written to offset dx%
+*justifyLine.PROP(txt$, txtWidth%, dx%)*...**full jutified left and right word wrapped** ONE LINE of proportional text with size txtWidth% written to offset dx%. In txt$ is then returned non printed rest
 
 *getTextWidth.PROP(fnt$, txt$)*...returns width of the proportinal text in font fnt% in pixels
 
